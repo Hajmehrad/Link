@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hajmehrad · Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=Vazirmatn:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --s1: #0f0f18;
+      --s2: #13131f;
+      --accent: #e8d5b7;
+      --accent2: #c9a96e;
+      --accent3: #8b7355;
+      --text: #e2ddd6;
+      --muted: #6b6660;
+      --border: rgba(232,213,183,0.08);
+      --border2: rgba(232,213,183,0.14);
+      --glow: rgba(201,169,110,0.12);
+    }
+
+    html { height: 100%; }
+
+    body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.25rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ─── Animated background ─── */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    /* Slow orbiting gradient blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.35;
+      animation: drift linear infinite;
+    }
+    .blob-1 {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, #3d2a08 0%, #1a1000 50%, transparent 70%);
+      top: -250px; left: -250px;
+      animation-duration: 14s;
+      opacity: 0.55;
+    }
+    .blob-2 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #081828 0%, #040e1a 50%, transparent 70%);
+      bottom: -200px; right: -200px;
+      animation-duration: 18s;
+      animation-direction: reverse;
+      opacity: 0.5;
+    }
+    .blob-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #1e0a2e 0%, #0e0516 50%, transparent 70%);
+      top: 35%; left: 45%;
+      animation-duration: 11s;
+      opacity: 0.4;
+    }
+    .blob-4 {
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, #2a1200 0%, transparent 70%);
+      top: 60%; left: 10%;
+      animation-duration: 16s;
+      opacity: 0.35;
+    }
+    @keyframes drift {
+      0%   { transform: translate(0,0) rotate(0deg); }
+      25%  { transform: translate(60px,80px) rotate(90deg); }
+      50%  { transform: translate(-40px,50px) rotate(180deg); }
+      75%  { transform: translate(50px,-30px) rotate(270deg); }
+      100% { transform: translate(0,0) rotate(360deg); }
+    }
+
+    /* Grid overlay */
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232,213,183,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,213,183,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* Noise texture */
+    .noise {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ─── Card ─── */
+    .card {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 420px;
+      opacity: 0;
+      transform: translateY(24px);
+      animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
+    }
+    @keyframes rise {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Header ─── */
+    .header {
+      margin-bottom: 2.5rem;
+    }
+
+    .eyebrow {
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent3);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px; height: 1px;
+      background: var(--accent3);
+    }
+
+    .name-wrap {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 8vw, 2.8rem);
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      color: var(--accent);
+      text-shadow: 0 0 60px rgba(201,169,110,0.2);
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.3rem 0.7rem;
+      border: 1px solid var(--border2);
+      border-radius: 100px;
+      white-space: nowrap;
+      margin-bottom: 0.2rem;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.02);
+    }
+    .live-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px #4ade80;
+      animation: livepulse 2s ease-in-out infinite;
+    }
+    @keyframes livepulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .tagline {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.9;
+      max-width: 320px;
+      font-weight: 300;
+      font-family: 'Vazirmatn', 'DM Mono', sans-serif;
+      direction: rtl;
+      text-align: right;
+    }
+    .tagline em {
+      color: var(--accent2);
+      font-style: normal;
+    }
+
+    /* ─── Divider ─── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2) 30%, var(--border2) 70%, transparent);
+      margin: 1.8rem 0;
+    }
+
+    /* ─── Stack chips ─── */
+    .stack-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 2rem;
+    }
+
+    .chip {
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--accent3);
+      background: rgba(232,213,183,0.03);
+      transition: all 0.25s;
+    }
+    .chip:hover {
+      border-color: var(--accent3);
+      color: var(--accent2);
+      background: rgba(232,213,183,0.06);
+    }
+
+    /* ─── Links ─── */
+    .links { display: flex; flex-direction: column; gap: 0.7rem; }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+      backdrop-filter: blur(8px);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      overflow: hidden;
+      group: true;
+    }
+
+    .link-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--glow), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .link-item::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, transparent, var(--accent2), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .link-item:hover {
+      border-color: var(--border2);
+      transform: translateX(4px) translateY(-1px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(232,213,183,0.06);
+    }
+    .link-item:hover::before { opacity: 1; }
+    .link-item:hover::after { opacity: 1; }
+
+    .link-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(232,213,183,0.05);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+    .link-item:hover .link-icon {
+      background: rgba(232,213,183,0.09);
+      border-color: var(--accent3);
+    }
+
+    .link-icon svg { width: 16px; height: 16px; fill: var(--accent2); }
+
+    .link-info { flex: 1; min-width: 0; }
+    .link-label {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.01em;
+    }
+    .link-sub {
+      font-size: 0.6rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .link-arrow {
+      color: var(--muted);
+      font-size: 0.9rem;
+      transition: all 0.25s;
+      flex-shrink: 0;
+    }
+    .link-item:hover .link-arrow {
+      color: var(--accent2);
+      transform: translateX(3px);
+    }
+
+    /* ─── Footer ─── */
+    .footer {
+      margin-top: 2.2rem;
+      text-align: center;
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    .footer span {
+      display: inline-block;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent3);
+      margin: 0 0.5rem;
+      vertical-align: middle;
+      opacity: 0.5;
+    }
+
+    /* stagger children */
+    .link-item:nth-child(1) { animation: rise 0.6s cubic-bezier(0.22,1,0.36,1) 0.5s both; }
+    .link-item:nth-child(2) { animation: rise 0.6s cubic-bezier(0.22,1,0.36,1) 0.62s both; }
+    .link-item:nth-child(3) { animation: rise 0.6s cubic-bezier(0.22,1,0.36,1) 0.74s both; }
+    .link-item:nth-child(4) { animation: rise 0.6s cubic-bezier(0.22,1,0.36,1) 0.86s both; }
+  </style>
+</head>
+<body>
+
+  <div class="bg-layer">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    <div class="grid-overlay"></div>
+    <div class="noise"></div>
+  </div>
+
+  <div class="card">
+
+    <div class="header">
+      <div class="eyebrow">developer · builder</div>
+
+      <div class="name-wrap">
+        <h1>Haj<br>mehrad</h1>
+        <div class="live-badge">
+          <div class="live-dot"></div>
+          available
+        </div>
+      </div>
+
+      <p class="tagline">
+        برنامه‌نویس پایتون، علاقه‌مند به <em>اتوماسیون</em> و حل مسئله.<br>
+        کدم رو تمیز می‌نویسم و شب‌ها بیدار می‌مونم که بهترش کنم.
+      </p>
+    </div>
+
+    <div class="stack-row">
+      <span class="chip">Python</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="links">
+
+      <!-- GitHub -->
+      <a href="https://github.com/hajmehrad" target="_blank" class="link-item">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </div>
+        <div class="link-info">
+          <div class="link-label">GitHub</div>
+          <div class="link-sub">github.com/hajmehrad</div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/mehrad._.f._.a?igsh=MTRqYTAxZnQyOWNlcw==" target="_blank" class="link-item">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+        </div>
+        <div class="link-info">
+          <div class="link-label">Instagram</div>
+          <div class="link-sub">@mehrad._.f._.a</div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <!-- Telegram -->
+      <a href="https://t.me/Haj0_0mehrad" target="_blank" class="link-item">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
+        </div>
+        <div class="link-info">
+          <div class="link-label">Telegram</div>
+          <div class="link-sub">@Haj0_0mehrad</div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+    </div>
+
+    <div class="footer">
+      Hajmehrad <span></span> Python Developer <span></span> 2025
+    </div>
+
+  </div>
+
+</body>
+</html>
