@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hajmehrad · Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Vazirmatn:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #070710;
+      --accent: #e8d5b7;
+      --accent2: #c9a96e;
+      --accent3: #7a6340;
+      --muted: #5a5450;
+      --border: rgba(232,213,183,0.08);
+      --border2: rgba(232,213,183,0.16);
+      --glow: rgba(201,169,110,0.1);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      font-family: 'DM Mono', monospace;
+      position: relative;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Background ── */
+    .bg-layer { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(120px);
+      animation: drift linear infinite;
+    }
+    .blob-1 {
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, #3d2a08 0%, #1c1200 45%, transparent 70%);
+      top: -300px; left: -300px;
+      animation-duration: 14s; opacity: 0.6;
+    }
+    .blob-2 {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, #081828 0%, #03080f 45%, transparent 70%);
+      bottom: -250px; right: -250px;
+      animation-duration: 18s; animation-direction: reverse; opacity: 0.55;
+    }
+    .blob-3 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #200a30 0%, #0e0516 45%, transparent 70%);
+      top: 30%; left: 40%;
+      animation-duration: 11s; opacity: 0.45;
+    }
+    .blob-4 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #2a1400 0%, transparent 70%);
+      top: 55%; left: 5%;
+      animation-duration: 16s; opacity: 0.4;
+    }
+    @keyframes drift {
+      0%   { transform: translate(0,0) rotate(0deg); }
+      25%  { transform: translate(70px,90px) rotate(90deg); }
+      50%  { transform: translate(-50px,60px) rotate(180deg); }
+      75%  { transform: translate(60px,-40px) rotate(270deg); }
+      100% { transform: translate(0,0) rotate(360deg); }
+    }
+    .grid-overlay {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(232,213,183,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,213,183,0.02) 1px, transparent 1px);
+      background-size: 72px 72px;
+    }
+    .noise {
+      position: absolute; inset: 0; opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ── Page shell ── */
+    .page {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    /* ── DESKTOP layout ── */
+    @media (min-width: 860px) {
+      .page {
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        grid-template-rows: 1fr auto;
+        grid-template-areas:
+          "left divv right"
+          "foot foot foot";
+        min-height: 100vh;
+      }
+      .left-col  { grid-area: left;  display: flex; flex-direction: column; justify-content: center; padding: 5rem 5rem 4rem 6rem; }
+      .vert-div  { grid-area: divv;  background: linear-gradient(180deg, transparent 5%, var(--border2) 30%, var(--border2) 70%, transparent 95%); margin: 3rem 0; }
+      .right-col { grid-area: right; display: flex; flex-direction: column; justify-content: center; padding: 5rem 6rem 4rem 5rem; gap: 0.8rem; }
+      .footer    { grid-area: foot; }
+      .mobile-divider { display: none; }
+    }
+
+    /* ── MOBILE layout ── */
+    @media (max-width: 859px) {
+      .page { padding: 3rem 1.4rem 2rem; gap: 2rem; }
+      .left-col { }
+      .vert-div { display: none; }
+      .right-col { display: flex; flex-direction: column; gap: 0.65rem; }
+      .mobile-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border2) 30%, var(--border2) 70%, transparent);
+      }
+    }
+
+    /* ── Left col ── */
+    .eyebrow {
+      font-size: 0.65rem;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--accent3);
+      display: flex; align-items: center; gap: 0.7rem;
+      margin-bottom: 1.4rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.1s forwards;
+    }
+    .eyebrow::before {
+      content: '';
+      display: block; width: 28px; height: 1px;
+      background: var(--accent3);
+    }
+
+    .name-block {
+      margin-bottom: 1.6rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.25s forwards;
+    }
+
+    /* Big display name */
+    .name-display {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 13vw, 9rem);
+      line-height: 0.88;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      text-shadow:
+        0 0 80px rgba(201,169,110,0.25),
+        0 2px 0 rgba(0,0,0,0.5);
+      display: block;
+      /* subtle gradient on text */
+      background: linear-gradient(160deg, #f0dfc0 0%, #c9a96e 55%, #8b6030 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .badge-row {
+      display: flex; align-items: center; gap: 0.7rem;
+      margin-top: 0.6rem;
+    }
+    .live-badge {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.3rem 0.75rem;
+      border: 1px solid var(--border2); border-radius: 100px;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.02);
+    }
+    .live-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: #4ade80; box-shadow: 0 0 7px #4ade80;
+      animation: livepulse 2s ease-in-out infinite;
+    }
+    @keyframes livepulse {
+      0%,100%{ opacity:1; transform:scale(1); }
+      50%    { opacity:0.4; transform:scale(0.75); }
+    }
+
+    .tagline {
+      font-size: 0.82rem; color: var(--muted); line-height: 2;
+      font-family: 'Vazirmatn', sans-serif;
+      direction: rtl; text-align: right;
+      max-width: 340px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.4s forwards;
+    }
+    .tagline em { color: var(--accent2); font-style: normal; }
+
+    .stack-row {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-top: 1.6rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.55s forwards;
+    }
+    .chip {
+      font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid var(--border); border-radius: 3px;
+      color: var(--accent3); background: rgba(232,213,183,0.03);
+      transition: all 0.25s; cursor: default;
+    }
+    .chip:hover {
+      border-color: var(--accent3); color: var(--accent2);
+      background: rgba(232,213,183,0.07);
+    }
+
+    /* ── Right col / Links ── */
+    .section-label {
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent3); margin-bottom: 0.6rem;
+      opacity: 0; animation: fadeUp 0.6s 0.5s forwards;
+    }
+
+    .link-item {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.3rem;
+      text-decoration: none;
+      border: 1px solid var(--border); border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.028), rgba(255,255,255,0.008));
+      transition: border-color 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
+      position: relative; overflow: hidden;
+      will-change: border-color, box-shadow;
+    }
+    .link-item::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--glow), transparent);
+      opacity: 0; transition: opacity 0.45s ease;
+    }
+    .link-item::after {
+      content: ''; position: absolute;
+      left: 0; top: 0; bottom: 0; width: 2px;
+      background: linear-gradient(180deg, transparent, var(--accent2), transparent);
+      opacity: 0; transition: opacity 0.45s ease;
+    }
+    .link-item:hover {
+      border-color: var(--border2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(232,213,183,0.06);
+      background: linear-gradient(135deg, rgba(255,255,255,0.042), rgba(255,255,255,0.012));
+    }
+    .link-item:hover::before { opacity: 1; }
+    .link-item:hover::after  { opacity: 1; }
+
+    .link-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(232,213,183,0.05);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: background 0.4s ease, border-color 0.4s ease;
+    }
+    .link-item:hover .link-icon {
+      background: rgba(232,213,183,0.1); border-color: var(--accent3);
+    }
+    .link-icon svg { width: 18px; height: 18px; fill: var(--accent2); }
+
+    .link-info { flex: 1; min-width: 0; }
+    .link-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--accent); letter-spacing: 0.03em;
+    }
+    .link-sub {
+      font-size: 0.62rem; color: var(--muted); margin-top: 0.18rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .link-arrow {
+      color: var(--muted); font-size: 1rem;
+      transition: color 0.4s ease, transform 0.4s ease; flex-shrink: 0;
+    }
+    .link-item:hover .link-arrow { color: var(--accent2); transform: translateX(3px); }
+
+    /* stagger links */
+    .link-item:nth-child(1) { opacity:0; animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.55s forwards; }
+    .link-item:nth-child(2) { opacity:0; animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.68s forwards; }
+    .link-item:nth-child(3) { opacity:0; animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.81s forwards; }
+    .link-item:nth-child(4) { opacity:0; animation: fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) 0.94s forwards; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center; padding: 1.2rem;
+      font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em;
+      border-top: 1px solid var(--border);
+      opacity: 0; animation: fadeUp 0.6s 1s forwards;
+    }
+    .footer span {
+      display: inline-block; width: 3px; height: 3px; border-radius: 50%;
+      background: var(--accent3); margin: 0 0.6rem; vertical-align: middle; opacity: 0.5;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-layer">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+    <div class="grid-overlay"></div>
+    <div class="noise"></div>
+  </div>
+
+  <div class="page">
+
+    <!-- LEFT -->
+    <div class="left-col">
+      <div class="eyebrow">developer · builder</div>
+
+      <div class="name-block">
+        <span class="name-display">Haj<br>mehrad</span>
+        <div class="badge-row">
+          <div class="live-badge">
+            <div class="live-dot"></div>
+            available
+          </div>
+        </div>
+      </div>
+
+      <p class="tagline">
+        برنامه‌نویس پایتون، علاقه‌مند به <em>اتوماسیون</em> و حل مسئله.<br>
+        کدم رو تمیز می‌نویسم و شب‌ها بیدار می‌مونم که بهترش کنم.
+      </p>
+
+      <div class="stack-row">
+        <span class="chip">Python</span>
+      </div>
+    </div>
+
+    <!-- VERT DIVIDER (desktop only) -->
+    <div class="vert-div"></div>
+
+    <!-- RIGHT -->
+    <div class="right-col">
+      <div class="section-label">// links</div>
+
+      <a href="https://github.com/hajmehrad" target="_blank" class="link-item">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        </div>
+        <div class="link-info">
+          <div class="link-label">GitHub</div>
+          <div class="link-sub">github.com/hajmehrad</div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <a href="https://www.instagram.com/mehrad._.f._.a?igsh=MTRqYTAxZnQyOWNlcw==" target="_blank" class="link-item">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+        </div>
+        <div class="link-info">
+          <div class="link-label">Instagram</div>
+          <div class="link-sub">@mehrad._.f._.a</div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+      <a href="https://t.me/Haj0_0mehrad" target="_blank" class="link-item">
+        <div class="link-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12l-6.871 4.326-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.833.941z"/></svg>
+        </div>
+        <div class="link-info">
+          <div class="link-label">Telegram</div>
+          <div class="link-sub">@Haj0_0mehrad</div>
+        </div>
+        <span class="link-arrow">→</span>
+      </a>
+
+    </div>
+
+    <div class="mobile-divider"></div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      Hajmehrad <span></span> Python Developer <span></span> 2025
+    </div>
+
+  </div>
+
+</body>
+</html>
